@@ -32,44 +32,48 @@
 // $citroen = new Citroen("Citroen");
 // echo $citroen->intro();
 
-// abstract class ParentClass {
-//     abstract protected function prefixName($name);
-// }
-
-// class ChildClass extends ParentClass {
-//     public function prefixName($name) {
-//         if ($name == "John Doe") {
-//             $prefix = "Mr. ";
-//         }elseif ($name == "Jane Doe") {
-//             $prefix = "Mrs. ";
-//         }else {
-//             $prefix = "";
-//         }
-//         return "{$prefix} {$name}";
-//     }
-// }
-// $class = new ChildClass();
-// echo $class->prefixName("John Doe");
-// echo PHP_EOL;
-// echo $class->prefixName("Jane Doe");
-
-abstract class ParentClass {
-    abstract protected function prefixName($name);
+abstract class PaymentGateway {
+    abstract public function connect();
+    abstract public function pay($amount);
+    abstract public function refund($transactionId);
+    public function setCurrency($currency) {
+        echo "Currency set to: $currency\n";
+    };
 }
 
-class ChildClass extends ParentClass {
-    public function prefixName($name, $separator = ".", $greet = "Dear") {
-        if ($name == "John Doe") {
-            $prefix = "Mr";
-        }elseif ($name == "Jane Doe") {
-            $prefix = "Mrs";
-        }else {
-            $prefix = "";
-        }
-        return "{$greet} {$prefix}{$separator} {$name}";
+class Paypal extends PaymentGateway {
+    public function connect() {
+        echo "Connecting to paypal API...\n";
+    }
+    public function pay($amount) {
+        echo "Paid $amount USE via PayPal. \n";
+    }
+    public function refund($transactionId) {
+        echo "Refund processed for transaction $transactionId via PayPal. \n";
     }
 }
-$class = new ChildClass();
-echo $class->prefixName("John Doe");
-echo PHP_EOL;
-echo $class->prefixName("Jane Doe");
+class Stripe extends PaymentGateway {
+    public function connect() {
+        echo "Connecting to Stripe API...\n";
+    }
+    public function pay($amount) {
+        echo "Paid $amount USE via Stripe. \n";
+    }
+    public function refund($transactionId) {
+        echo "Refund processed for transaction $transactionId via Stripe. \n";
+    }
+}
+
+//using paypal
+$paypal = new PayPal();
+$paypal->connect();
+$paypal->setCurrency("USD");
+$paypal->pay(100);
+$paypal->refund("TXN12345");
+
+//using stripe
+$stripe = new Stripe();
+$stripe->connect();
+$stripe->setCurrency("USD");
+$stripe->pay(200);
+$stripe->refund("TXN67890");
